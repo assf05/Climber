@@ -10,7 +10,7 @@ By: Assaf Sachs & Ido Azran with help from Gal Arbel
 
 #include "Climber.h"
 
-Climber climber(); //create an Object. Init Climber
+Climber climber; //create an Object. Init Climber
 
 void setup() 
 {
