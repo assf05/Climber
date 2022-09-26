@@ -4,18 +4,17 @@
   
   
 
-By: Gal Arbel
+By: Assaf Sachs & Ido Azran with help from Gal Arbel
 2022
 */
 
 #include "Climber.h"
 
-Climber climber(); //create an Object. Init PenYX at a selected speed
-const unsigned int MAX_MESSAGE_LENGTH = 64;
+Climber climber(); //create an Object. Init Climber
 
-void setup() {
+void setup() 
+{
   climber.begin(); 
-  
 }
 
 void loop() {  
@@ -87,6 +86,5 @@ void loop() {
    delay (30);
  }
   //My Code starts Here
-  //climber.move(255,255);
 
 }
