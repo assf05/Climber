@@ -12,9 +12,8 @@ by ido azran
  
 static const int enA = 5; // connected to l298n, left motor
 static const int enB = 6; // connected to l298n, right motor
- GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
-
-
+GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
+float y;
 
 
 Climber::Climber() {
@@ -36,4 +35,12 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
   Serial.print("  |  Left Speed =");
   Serial.println(left_speed);
  }
+
+
+void Climber::GetYaw() {
+  sensor.read();
+  y = sensor.getYaw();
+}
+
+
  
