@@ -32,19 +32,19 @@ void loop() {
   if(yaw > -3 && yaw < 3){ // robot driving stright
   left_speed = 200; 
   right_speed = 200; 
-  climber.move(int left_speed, int right_speed);
+  climber.move(left_speed, right_speed);
 } 
 
 else if (yaw < -3) {  // robot to far left
   left_speed--; 
   right_speed = 200; 
-  climber.move(int left_speed, int right_speed);
+  climber.move(left_speed, right_speed);
 } 
 
 else {   // robot to far right
   left_speed = 200; 
   right_speed--; 
-  climber.move(int left_speed, int right_speed);
+  climber.move(left_speed, right_speed);
 }
 
 
