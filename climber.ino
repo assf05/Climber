@@ -15,6 +15,8 @@ Climber climber; //create Climber object
 int left_speed = 200; 
 int right_speed = 200;
 
+int yaw;
+
 
 void setup() {
 
@@ -25,7 +27,7 @@ void setup() {
 
 void loop() {  
 
-  climber.GetYaw();
+  yaw = climber.GetYaw();
 
   if(yaw > -3 && yaw < 3){ // robot driving stright
   left_speed = 200; 
