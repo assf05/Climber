@@ -1,26 +1,56 @@
 
 /* /////               Climber Software       ///////////////////////
     An Climber Robot 
-  
-  
 
-By: Assaf Sachs & Ido Azran with help from Gal Arbel
+    v0.0.1
+
+By: Ido Azran And Assf Saces
 2022
 */
 
 #include "Climber.h"
 
-Climber climber; //create an Object. Init Climber
+Climber climber; //create Climber object 
 
-void setup() 
-{
+int left_speed = 200; 
+int right_speed = 200;
+
+
+void setup() {
+
   climber.begin(); 
+  climber.GyroYawCalibration();
+  
 }
 
 void loop() {  
+
+  climber.GetYaw();
+
+  if(yaw > -3 && yaw < 3){ // robot driving stright
+  left_speed = 200; 
+  right_speed = 200; 
+  climber.move(int left_speed, int right_speed);
+} 
+
+else if (yaw < -3) {  // robot to far left
+  left_speed--; 
+  right_speed = 200; 
+  climber.move(int left_speed, int right_speed);
+} 
+
+else {   // robot to far right
+  left_speed = 200; 
+  right_speed--; 
+  climber.move(int left_speed, int right_speed);
+}
+
+
+
+
  //This is the CLI Functionality
  // You can add cases with new functionalities 
- while (Serial.available() > 0) {
+ /*while (Serial.available() > 0) {
    char message[MAX_MESSAGE_LENGTH];
    static unsigned int message_pos = 0;
    char inByte = Serial.read();   //Read the next available byte in the serial receive buffer
@@ -81,10 +111,15 @@ void loop() {
         break;
         message_pos = 0;     //Reset for the next message
       }
+    */  
+
+
+
    } 
   
    delay (30);
  }
   //My Code starts Here
+  //climber.move(255,255);
 
 }
