@@ -50,7 +50,7 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
   digitalWrite(enB, right_speed);//moves left moter with right_speed(pwm)
  }
 
- void Climber::GetYaw() {
+ float Climber::GetYaw() {
   sensor.read();
   yaw = sensor.getYaw();
   Serial.println("Yaw Angle =  " + yaw);
