@@ -15,7 +15,7 @@ Climber climber; //create Climber object
 int left_speed = 200; 
 int right_speed = 200;
 
-float yaw;
+float y;
 
 
 void setup() {
@@ -27,15 +27,15 @@ void setup() {
 
 void loop() {  
 
-  yaw = climber.GetYaw();
+  y = climber.GetYaw();
 
-  if(yaw > -3 && yaw < 3){ // robot driving stright
+  if(y > -3 && y < 3){ // robot driving stright
   left_speed = 200; 
   right_speed = 200; 
   climber.move(left_speed, right_speed);
 } 
 
-else if (yaw < -3) {  // robot to far left
+else if (y < -3) {  // robot to far left
   left_speed--; 
   right_speed = 200; 
   climber.move(left_speed, right_speed);
