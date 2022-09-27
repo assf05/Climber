@@ -15,7 +15,7 @@ by Ido Azran & Assf Saces
   public:
     Climber(); 
     void begin();   
-    void GetYaw(); //gets gyro yaw angle 
+    float GetYaw(); //gets gyro yaw angle 
     void GyroYawCalibration(); //Calibrats gyro for correct yaw reading
     void move(int left_speed, int right_speed); //move with right and left speed
 
