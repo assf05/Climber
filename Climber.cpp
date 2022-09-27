@@ -14,7 +14,7 @@ by Ido Azran & Assf Saces
 static const int enA = 5; // connected to l298n, left motor
 static const int enB = 6; // connected to l298n, right motor
  GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
-
+float yaw;
 
 
 
@@ -54,6 +54,7 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
   sensor.read();
   yaw = sensor.getYaw();
   Serial.println("Yaw Angle =  " + yaw);
+  return yaw;
 }
 
 void Climber::GyroYawCalibration() {
