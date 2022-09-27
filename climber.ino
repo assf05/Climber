@@ -15,7 +15,7 @@ Climber climber; //create Climber object
 int left_speed = 200; 
 int right_speed = 200;
 
-int yaw;
+float yaw;
 
 
 void setup() {
