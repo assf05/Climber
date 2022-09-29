@@ -2,7 +2,7 @@
 /* /////               Climber Software       ///////////////////////
     An Climber Robot 
 
-    v0.0.1
+    v0.0.2b
 
 By: Ido Azran And Assf Saces
 2022
@@ -51,11 +51,10 @@ else {   // robot to far right
 }
 
 
-
-
  //This is the CLI Functionality
  // You can add cases with new functionalities 
- /*while (Serial.available() > 0) {
+ // CLI - Messages from Terminal
+  while (Serial.available() > 0) { 
    char message[MAX_MESSAGE_LENGTH];
    static unsigned int message_pos = 0;
    char inByte = Serial.read();   //Read the next available byte in the serial receive buffer
@@ -69,8 +68,7 @@ else {   // robot to far right
      {
       message[message_pos] = '\0';     //Add null character to string
       Serial.println(message);     //echo the message to terminal
-      //penyx.display(message);
-          
+        
       int command[4];
       int argindex = 0;
       char cmd;
@@ -83,8 +81,7 @@ else {   // robot to far right
         char *ptr = strtok(tmpmsg, delim);
 	      while(ptr != NULL)
 	       {
-          Serial.println(ptr);
-
+		      //Serial.printf("'%s'\n", ptr);
           if (argindex == 0) {
             cmd = ptr[0];
           }
@@ -98,25 +95,44 @@ else {   // robot to far right
        case 'h': //Set port to HIGH
         pinMode(command[1],OUTPUT);
         digitalWrite(command[1],HIGH);
-        Serial.print("Pin");
-        Serial.print(command[1]);
-        Serial.println(" = HIGH");
-        
-           
+        Serial.println("Pin SET");   
         delay(1000);
-        
         break;
        case 'l': // Set port to LOW
         pinMode(command[1],OUTPUT);
         digitalWrite(command[1],LOW);
-        Serial.print("Pin");
-        Serial.print(command[1]);
-        Serial.println(" = LOW");
+        Serial.println("Pin RESET");   
         delay(1000);
         break;
-        message_pos = 0;     //Reset for the next message
+       
+       case 'a': // analog Write to pwm ports
+        pinMode(command[1],OUTPUT);
+        analogWrite(command[1],command[2]);
+        Serial.println("writing analog value");   
+        delay(1000);
+        break;
+
+       case 'r': // digital read
+        pinMode(command[1],INPUT);
+        Serial.print("Pin Value ="); 
+        Serial.println(digitalRead(command[1]));   
+        delay(1000);
+        break;
+
+        case 'e': // analog read
+        pinMode(command[1],INPUT);
+        Serial.print("Pin Value ="); 
+        Serial.println(analogRead(command[1]));   
+        delay(1000);
+        break;
+       
+       message_pos = 0;     //Reset for the next message
       }
-    */  
+   }
+   delay (60);
+   
+ } 
+    
 
 
 
