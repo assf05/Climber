@@ -10,9 +10,14 @@ by Ido Azran & Assf Saces
  #include <Wire.h>
  #include <GY521.h> 
 
- 
+static const int en1 = 1; 
+static const int en2 = 2; 
 static const int enA = 5; // connected to l298n, left motor
+
+static const int en3 = 3; 
+static const int en4 = 4; 
 static const int enB = 6; // connected to l298n, right motor
+
  GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
@@ -46,8 +51,8 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
   Serial.print(right_speed);
   Serial.print("  |  Left Speed =");
   Serial.println(left_speed); 
-  digitalWrite(enA, left_speed); //moves left moter with left_speed(pwm)
-  digitalWrite(enB, right_speed);//moves left moter with right_speed(pwm)
+  analogWrite(enA, left_speed); //moves left moter with left_speed(pwm)
+  analogWrite(enB, right_speed);//moves left moter with right_speed(pwm)
  }
 
  float Climber::GetYaw() {
