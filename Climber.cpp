@@ -23,8 +23,10 @@ static const int enB = 6; // connected to l298n, right motor
 GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
-SoftwareSerial MyBlue(2, 3); // RX | TX 
-
+SoftwareSerial BTSerial(2, 3); // RX | TX 
+float num;
+//float manualEN1;
+//float manualEN2;
 
 Climber::Climber() {
   //this->speed = speed; //assign motors speed or - delay
@@ -32,7 +34,7 @@ Climber::Climber() {
 
 void Climber::begin() {
   Serial.begin(115200);
-  MyBlue.begin(115200);
+  BTSerial.begin(115200);
   Wire.begin();
   delay(100);
 
@@ -46,9 +48,6 @@ void Climber::begin() {
   Serial.println("Climber Initiated");
   pinMode(enA,OUTPUT); 
   pinMode(enB,OUTPUT); 
- 
- Serial.println("cli works only with bluetooth terminal");
- MyBlue.println("cli works only with bluetooth terminal");
 }
 
 
@@ -77,85 +76,51 @@ void Climber::GyroYawCalibration() {
   sensor.gye = -6.436;
 }
  
-void Climber::cli() { 
- while (MyBlue.available() > 0) { 
-   char message[MAX_MESSAGE_LENGTH];
-   static unsigned int message_pos = 0;
-   char inByte = MyBlue.read();   //Read the next available byte in the serial receive buffer
-    if ( inByte != '\n' && (message_pos < MAX_MESSAGE_LENGTH - 1) )
-     {
-     message[message_pos] = inByte;  //Add the incoming byte to our message
-     message_pos++;
-     }
-     //Full message received...
-     else
-     {
-      message[message_pos] = '\0';     //Add null character to string
-      MyBlue.println(message);     //echo the message to terminal
-        
-      int command[4];
-      int argindex = 0;
-      char cmd;
-      char delim[] = " ";
-	     char tmpmsg[MAX_MESSAGE_LENGTH];
-       strcpy(tmpmsg,message);
-       message_pos = 0;
-       message[message_pos] = '\0';     //Add null character to string
+void Climber::BluetoothController() {
+	if(BTSerial.available()){
+   	num = BTSerial.read();
+ } 
+	switch (num) { 
+	  case 1: // Stright
+		 analogWrite(enA, 255); 
+                 analogWrite(enB, 255); 
+	   break;
+			
+	 case 2: // Backwards
+		 analogWrite(enA, -255); 
+                 analogWrite(enB, -255);
+	  break;
+			
+	 case 3: // Right
+		 analogWrite(enA, 180); 
+                 analogWrite(enB, 120);
+	  break;
 
-        char *ptr = strtok(tmpmsg, delim);
-	      while(ptr != NULL)
-	       {
-		      //Serial.printf("'%s'\n", ptr);
-          if (argindex == 0) {
-            cmd = ptr[0];
-          }
-          command[argindex] = atoi(ptr);   
-          //Serial.println(command[argindex]);
-          argindex++;  
-		      ptr = strtok(NULL, delim);
-	       } 
-
-      switch (cmd) {
-       case 'h': //Set port to HIGH
-        pinMode(command[1],OUTPUT);
-        digitalWrite(command[1],HIGH);
-        MyBlue.println("Pin SET");   
-        delay(1000);
-        break;
-       case 'l': // Set port to LOW
-        pinMode(command[1],OUTPUT);
-        digitalWrite(command[1],LOW);
-        MyBlue.println("Pin RESET");   
-        delay(1000);
-        break;
-       
-       case 'a': // analog Write to pwm ports
-        pinMode(command[1],OUTPUT);
-        analogWrite(command[1],command[2]);
-        MyBlue.println("writing analog value");   
-        delay(1000);
-        break;
-
-       case 'r': // digital read
-        pinMode(command[1],INPUT);
-        MyBlue.print("Pin Value ="); 
-        MyBlue.println(digitalRead(command[1]));   
-        delay(1000);
-        break;
-
-        case 'e': // analog read
-        pinMode(command[1],INPUT);
-        MyBlue.print("Pin Value ="); 
-        MyBlue.println(analogRead(command[1]));   
-        delay(1000);
-        break;
-       
-       message_pos = 0;     //Reset for the next message
-      }
-   }
-   delay (60); 
- }   
-   }   
-   delay (30);
- }
+	 case 4: //Left
+		 analogWrite(enA, 120); 
+                 analogWrite(enB, 180);
+	  break;
 }
+	
+void Climber::BluetoothUpdateVariables() 
+{
+     Serial.println("Starting Calibration");
+     sensor.setAccelSensitivity(2);  // 8g
+     sensor.setGyroSensitivity(1);   // 500 degrees/s
+     sensor.aye = -0.002;
+     sensor.gye = -6.436;
+	
+	if(BTSerial.available()){
+   	num = BTSerial.read();
+ }     
+	
+	BTSerial.println("Gyro Angle = " + sensor.read());
+	num = BTserial.read();
+	
+	if(num <= 252)
+	{
+	    analogWrite(enA, num)
+	 } 
+	
+	 
+  }
