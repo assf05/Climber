@@ -24,9 +24,9 @@ GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
 SoftwareSerial BTSerial(2, 3); // RX | TX 
-float num;
-//float manualEN1;
-//float manualEN2;
+char let;
+float manualENA = 0;
+float manualENB = 0;
 
 Climber::Climber() {
   //this->speed = speed; //assign motors speed or - delay
@@ -78,25 +78,25 @@ void Climber::GyroYawCalibration() {
  
 void Climber::BluetoothController() {
 	if(BTSerial.available()){
-   	num = BTSerial.read();
+   	let = BTSerial.read();
  } 
-	switch (num) { 
-	  case 1: // Stright
+	switch (let) { 
+	  case U: // Stright
 		 analogWrite(enA, 255); 
                  analogWrite(enB, 255); 
 	   break;
 			
-	 case 2: // Backwards
+	 case D: // Backwards
 		 analogWrite(enA, -255); 
                  analogWrite(enB, -255);
 	  break;
 			
-	 case 3: // Right
+	 case R: // Right
 		 analogWrite(enA, 180); 
                  analogWrite(enB, 120);
 	  break;
 
-	 case 4: //Left
+	 case L: //Left
 		 analogWrite(enA, 120); 
                  analogWrite(enB, 180);
 	  break;
@@ -111,16 +111,19 @@ void Climber::BluetoothUpdateVariables()
      sensor.gye = -6.436;
 	
 	if(BTSerial.available()){
-   	num = BTSerial.read();
+   	let = BTSerial.read();
  }     
 	
 	BTSerial.println("Gyro Angle = " + sensor.read());
 	num = BTserial.read();
 	
 	if(num <= 252)
-	{
-	    analogWrite(enA, num)
-	 } 
+	   manualENA = num;
+	
+	else
+	    manualENB = num - 504;		
+	
+	analogWrite(manualENA, manualENB); 
 	
 	 
   }
