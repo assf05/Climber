@@ -25,8 +25,10 @@ float yaw;
 
 SoftwareSerial BTSerial(2, 3); // RX | TX 
 char let;
-float manualENA = 0;
-float manualENB = 0;
+float manualENA_SPD = 0;
+float manualENB_SPD = 0; 
+float enA = 6; 
+float enB = 7;
 
 Climber::Climber() {
   //this->speed = speed; //assign motors speed or - delay
@@ -104,13 +106,16 @@ void Climber::BluetoothController() {
 	
 void Climber::BluetoothUpdateVariables() 
 {
+    // Gyro Setup & Calibration
      Serial.println("Starting Calibration");
      sensor.setAccelSensitivity(2);  // 8g
      sensor.setGyroSensitivity(1);   // 500 degrees/s
      sensor.aye = -0.002;
-     sensor.gye = -6.436;
+     sensor.gye = -6.436; 
 	
-	if(BTSerial.available()){
+	BTSerial.print(sensor.getYaw());
+	
+	if(BTSerial.available())
    	let = BTSerial.read();
  }     
 	
@@ -118,12 +123,19 @@ void Climber::BluetoothUpdateVariables()
 	num = BTserial.read();
 	
 	if(num <= 252)
-	   manualENA = num;
+	   manualENA_SPD = num;
 	
 	else
-	    manualENB = num - 504;		
+	    manualENB_SPD = num - 504;		
 	
-	analogWrite(manualENA, manualENB); 
+	analogWrite(enA, manualENA_SPD);
+	analogWrite(enB, manualENB_SPD);
 	
-	 
-  }
+	delay(100);	
+  } 
+
+void Climber::AutoMode
+{
+	analogWrite(enA, 255);
+	analogWrite(enB, 255);
+ }
