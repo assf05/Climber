@@ -35,11 +35,27 @@ switch(let)
  case A: //Auto Mode 
 	isAuto = true;
    break;
- case M: //Auto Mode 
+ case M: //Manual Mode 
 	isManual = true;
    break;
- case V: //Auto Mode 
-	isAuto = true;
-   break;
+ case V: //UpdateVariables Mode 
+	isUpdate = true;
+   break; 
+} 
 	
+if(let = 'Z'){ //Exited from Mode
+ isAuto = false; 
+ isManual = false; 
+ isUpdate = false;	
+} 
+
+if(isAuto)
+ Climber.AutoMode();
+	
+if(isManual)
+ Climber.BluetoothController(); 
+	
+if(isUpdate){
+  Climber.BluetoothUpdateVariables();
+ 	
 }
