@@ -1,6 +1,6 @@
 #include "HardwareSerial.h"
 /* cpp code for Climber library
-v0.0.2
+v0.1
 using Default I2C pins : SCL = A5, SDA = A4 
 by Ido Azran & Assf Saces
 2022
@@ -26,17 +26,19 @@ float yaw;
 SoftwareSerial BTSerial(2, 3); // RX | TX 
 char let;
 float manualENA_SPD = 0;
-float manualENB_SPD = 0; 
-float enA = 6; 
-float enB = 7;
+float manualENB_SPD = 0;  
+
+ int YAW_MIN_ERROR = -3;
+ int YAW_MAX_ERROR = 3;
+
 
 Climber::Climber() {
   //this->speed = speed; //assign motors speed or - delay
 }
 
 void Climber::begin() {
-  Serial.begin(115200);
-  BTSerial.begin(115200);
+  Serial.begin(9600);
+  BTSerial.begin(9600);
   Wire.begin();
   delay(100);
 
@@ -71,7 +73,6 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
 }
 
 void Climber::GyroYawCalibration() {
-  Serial.println("Starting Calibration");
   sensor.setAccelSensitivity(2);  // 8g
   sensor.setGyroSensitivity(1);   // 500 degrees/s
   sensor.aye = -0.002;
@@ -106,12 +107,9 @@ void Climber::BluetoothController() {
 	
 void Climber::BluetoothUpdateVariables() 
 {
-    // Gyro Setup & Calibration
-     Serial.println("Starting Calibration");
-     sensor.setAccelSensitivity(2);  // 8g
-     sensor.setGyroSensitivity(1);   // 500 degrees/s
-     sensor.aye = -0.002;
-     sensor.gye = -6.436; 
+    // Gyro Calibration & Get info
+    	GyroYawCalibration(); 
+	GetYaw();
 	
 	BTSerial.print(sensor.getYaw());
 	
@@ -134,8 +132,28 @@ void Climber::BluetoothUpdateVariables()
 	delay(100);	
   } 
 
-void Climber::AutoMode
-{
-	analogWrite(enA, 255);
-	analogWrite(enB, 255);
- }
+void Climber::AutoMode(){ 
+ begin();
+ GyroYawCalibration();	 
+ yaw = sensor.GetYaw();
+	
+ if(yaw > YAW_MIN_ERROR && y < YAW_MAX_ERROR){ // robot in exceptable range, robot driving stright
+  left_speed = 200; 
+  right_speed = 200; 
+  move(left_speed, right_speed);
+} 
+
+else if (yaw < YAW_MIN_ERROR) {  // robot to far left
+  left_speed--; 
+  right_speed = 200; 
+  climber.move(left_speed, right_speed);
+} 
+
+else {   // robot to far right
+  left_speed = 200; 
+  right_speed--; 
+  climber.move(left_speed, right_speed);
+   }  
+}
+
+
