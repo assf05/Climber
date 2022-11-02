@@ -27,8 +27,19 @@ void setup() {
   climber.GyroYawCalibration();
 }
 
-void loop() {  
+void loop() {   
+let = BTSerial.read(); 
 
-
+if(let = 'A' || let = 'M' || let = 'V'){
+switch(let) 
+ case A: //Auto Mode 
+	isAuto = true;
+   break;
+ case M: //Auto Mode 
+	isManual = true;
+   break;
+ case V: //Auto Mode 
+	isAuto = true;
+   break;
 	
 }
