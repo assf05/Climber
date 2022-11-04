@@ -1,6 +1,6 @@
 #include "HardwareSerial.h"
 /* cpp code for Climber library
-v0.1
+v0.1.1b
 using Default I2C pins : SCL = A5, SDA = A4 
 by Ido Azran & Assf Saces
 2022
@@ -18,7 +18,10 @@ static const int enA = 5; // connected to l298n, left motor
 
 static const int en3 = 3; 
 static const int en4 = 4; 
-static const int enB = 6; // connected to l298n, right motor
+static const int enB = 6; // connected to l298n, right motor 
+
+int left_speed; 
+int right_speed;
 
 GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
@@ -68,7 +71,7 @@ void Climber::move(int left_speed, int right_speed) { //moves both motors with s
  float Climber::GetYaw() {
   sensor.read();
   yaw = sensor.getYaw();
-  Serial.println("Yaw Angle =  " + yaw);
+  Serial.println(yaw);
   return yaw;
 }
 
@@ -84,41 +87,40 @@ void Climber::BluetoothController() {
    	let = BTSerial.read();
  } 
 	switch (let) { 
-	  case U: // Stright
+	  case 'U': // Stright
 		 analogWrite(enA, 255); 
                  analogWrite(enB, 255); 
 	   break;
 			
-	 case D: // Backwards
+	 case 'D': // Backwards
 		 analogWrite(enA, -255); 
                  analogWrite(enB, -255);
 	  break;
 			
-	 case R: // Right
+	 case 'R': // Right
 		 analogWrite(enA, 180); 
                  analogWrite(enB, 120);
 	  break;
 
-	 case L: //Left
+	 case 'L': //Left
 		 analogWrite(enA, 120); 
                  analogWrite(enB, 180);
 	  break;
 }
-	
-void Climber::BluetoothUpdateVariables() 
-{
+}
+void Climber::BluetoothUpdateVariables(){
+
     // Gyro Calibration & Get info
     	GyroYawCalibration(); 
-	GetYaw();
+     	GetYaw();
 	
 	BTSerial.print(sensor.getYaw());
 	
 	if(BTSerial.available())
-   	let = BTSerial.read();
- }     
+   	let = BTSerial.read();    
 	
 	BTSerial.println("Gyro Angle = " + sensor.read());
-	num = BTserial.read();
+  int	num = BTSerial.read();
 	
 	if(num <= 252)
 	   manualENA_SPD = num;
@@ -135,9 +137,9 @@ void Climber::BluetoothUpdateVariables()
 void Climber::AutoMode(){ 
  begin();
  GyroYawCalibration();	 
- yaw = sensor.GetYaw();
+  yaw = sensor.getYaw();
 	
- if(yaw > YAW_MIN_ERROR && y < YAW_MAX_ERROR){ // robot in exceptable range, robot driving stright
+ if(yaw > YAW_MIN_ERROR && yaw < YAW_MAX_ERROR){ // robot in exceptable range, robot driving stright
   left_speed = 200; 
   right_speed = 200; 
   move(left_speed, right_speed);
@@ -146,14 +148,16 @@ void Climber::AutoMode(){
 else if (yaw < YAW_MIN_ERROR) {  // robot to far left
   left_speed--; 
   right_speed = 200; 
-  climber.move(left_speed, right_speed);
+  move(left_speed, right_speed);
 } 
 
 else {   // robot to far right
   left_speed = 200; 
   right_speed--; 
-  climber.move(left_speed, right_speed);
+  move(left_speed, right_speed);
    }  
 }
+
+
 
 
