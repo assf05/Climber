@@ -12,13 +12,13 @@ by Ido Azran & Assf Saces
  #include <SoftwareSerial.h>
  
 
-static const int en1 = 1; 
-static const int en2 = 2; 
-static const int enA = 5; // connected to l298n, left motor
+static const int en1 = 3; 
+static const int en2 = 4; 
+static const int enA = 2; // connected to l298n, left motor
 
-static const int en3 = 3; 
-static const int en4 = 4; 
-static const int enB = 6; // connected to l298n, right motor 
+static const int en3 = 5; 
+static const int en4 = 6; 
+static const int enB = 7; // connected to l298n, right motor 
 
 int left_speed; 
 int right_speed;
@@ -26,7 +26,7 @@ int right_speed;
 GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
-SoftwareSerial BTSerial(2, 3); // RX | TX 
+SoftwareSerial BTSerial(7, 8); // RX | TX 
 char let;
 float manualENA_SPD = 0;
 float manualENB_SPD = 0;  
