@@ -26,8 +26,6 @@ int right_speed;
 GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
-SoftwareSerial BTSerial(1, 0); // RX | TX 
-char let;
 float manualENA_SPD = 0;
 float manualENB_SPD = 0;  
 
@@ -40,36 +38,47 @@ Climber::Climber() {
 }
 
 void Climber::begin() {
+  pinMode(en1, OUTPUT);
+  pinMode(en2, OUTPUT);
+  pinMode(enA, OUTPUT);
+  
+  pinMode(en3, OUTPUT);
+  pinMode(en4, OUTPUT);
+  pinMode(enB, OUTPUT);
+  
   Serial.begin(9600);
-  BTSerial.begin(9600);
   Wire.begin();
   delay(100);
 
-  while (sensor.wakeup() == false)
-  {
-    Serial.print(millis());
-    Serial.println("\tCould not connect to GY521");
-    delay(1000);
-  }  
-
-  Serial.println("Climber Initiated");
-  pinMode(enA,OUTPUT); 
-  pinMode(enB,OUTPUT); 
 }
 
-char Climber::getCharBT(){
-  let = BTSerial.read(); 
-	return let;
-} 
 
-void Climber::move(int left_speed, int right_speed) { //moves both motors with speed(pwm)
-  Serial.println("move activated");
-  Serial.print("Right Speed =");
-  Serial.print(right_speed);
-  Serial.print("  |  Left Speed =");
-  Serial.println(left_speed); 
+
+void Climber::move(int left_speed, int right_speed) { //moves both motors with speed(pwm) 
+
   analogWrite(enA, left_speed); //moves left moter with left_speed(pwm)
   analogWrite(enB, right_speed);//moves left moter with right_speed(pwm)
+
+  if(left_speed > 0){
+	  digitalWrite(en1, HIGH);
+	  digitalWrite(en2, LOW);
+  } 
+  else{
+	  digitalWrite(en1, LOW);
+	  digitalWrite(en1, HIGH);
+  }
+  
+    if(right_speed > 0){
+	  digitalWrite(en3, HIGH);
+	  digitalWrite(en4, LOW);
+  } 
+  else{
+	  digitalWrite(en3, LOW);
+	  digitalWrite(en4, HIGH);
+  }
+	  
+  
+
  }
 
  float Climber::GetYaw() {
@@ -86,45 +95,109 @@ void Climber::GyroYawCalibration() {
   sensor.gye = -6.436;
 }
  
-void Climber::BluetoothController() {
-	if(BTSerial.available()){
-   	let = BTSerial.read();
- } 
-	switch (let) { 
-	  case 'U': // Stright
-		 analogWrite(enA, 255); 
+void Climber::BluetoothController(String let) { 
+
+	if(let == "U"){ //Up
+
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);
+	}
+	if(let == "D"){ //Down
+
+				 
+	 			 digitalWrite(en1, LOW);
+	             digitalWrite(en2, HIGH);
+				 
+	             digitalWrite(en3, LOW);
+	             digitalWrite(en4, HIGH); 		
+	}
+	if(let == "R"){ //Right
+
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);	
+	}
+	if(let == "L"){ //Left
+
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);	
+	}
+ 
+	/* switch (let) { 
+	  case "U": // Stright
+	             analogWrite(enA, 255); 
                  analogWrite(enB, 255); 
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);
+				 
+		         
 	   break;
 			
-	 case 'D': // Backwards
-		 analogWrite(enA, -255); 
+	 case "D": // Backwards
+	             analogWrite(enA, -255); 
                  analogWrite(enB, -255);
+				 
+	 			 digitalWrite(en1, LOW);
+	             digitalWrite(en2, HIGH);
+				 
+	             digitalWrite(en3, LOW);
+	             digitalWrite(en4, HIGH); 
+				 
+
 	  break;
 			
-	 case 'R': // Right
-		 analogWrite(enA, 180); 
+	 case "R": // Right
+			     analogWrite(enA, 180); 
                  analogWrite(enB, 120);
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);	 
+
 	  break;
 
-	 case 'L': //Left
-		 analogWrite(enA, 120); 
+	 case "L": //Left
+	 		     analogWrite(enA, 120); 
                  analogWrite(enB, 180);
+				 
+			     digitalWrite(en1, HIGH);
+	             digitalWrite(en2, LOW);
+				 
+	             digitalWrite(en3, HIGH);
+	             digitalWrite(en4, LOW);	 
+
 	  break;
 }
+*/
 }
-void Climber::BluetoothUpdateVariables(){
+void Climber::BluetoothUpdateVariables(String let){
 
     // Gyro Calibration & Get info
     	GyroYawCalibration(); 
      	GetYaw();
 	
-	BTSerial.print(sensor.getYaw());
+	Serial.print(sensor.getYaw());
+	  
 	
-	if(BTSerial.available())
-   	let = BTSerial.read();    
-	
-	BTSerial.println("Gyro Angle = " + sensor.read());
-  int	num = BTSerial.read();
+	Serial.print(sensor.read());
+    int num = let.toInt();
 	
 	if(num <= 252)
 	   manualENA_SPD = num;
@@ -133,9 +206,24 @@ void Climber::BluetoothUpdateVariables(){
 	    manualENB_SPD = num - 504;		
 	
 	analogWrite(enA, manualENA_SPD);
-	analogWrite(enB, manualENB_SPD);
-	
-	delay(100);	
+		if(num < 0) {
+	 	digitalWrite(en1, LOW);
+	    digitalWrite(en2, HIGH);	
+	}  
+	else if(num > 0 && num >= 252){
+	 	digitalWrite(en1, HIGH);
+	    digitalWrite(en2, LOW);			
+	}
+	analogWrite(enB, manualENB_SPD); 
+        if(num > 252 && num < 504){
+	 	digitalWrite(en3, LOW);
+	    digitalWrite(en4, HIGH);		 
+	 } 
+	 else if(num > 504){
+	 digitalWrite(en3, HIGH);
+	 digitalWrite(en4, LOW);		 
+	 }
+		
   } 
 
 void Climber::AutoMode(){ 
