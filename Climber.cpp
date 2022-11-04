@@ -1,6 +1,6 @@
 #include "HardwareSerial.h"
 /* cpp code for Climber library
-v0.1.2b
+v0.1
 using Default I2C pins : SCL = A5, SDA = A4 
 by Ido Azran & Assf Saces
 2022
@@ -26,7 +26,7 @@ int right_speed;
 GY521 sensor(0x69); // connected to gyro, I2C Address 0x69
 float yaw;
 
-SoftwareSerial BTSerial(7, 8); // RX | TX 
+SoftwareSerial BTSerial(1, 0); // RX | TX 
 char let;
 float manualENA_SPD = 0;
 float manualENB_SPD = 0;  
@@ -45,7 +45,8 @@ void Climber::begin() {
   Wire.begin();
   delay(100);
 
-  while (sensor.wakeup() == false){
+  while (sensor.wakeup() == false)
+  {
     Serial.print(millis());
     Serial.println("\tCould not connect to GY521");
     delay(1000);
@@ -54,14 +55,12 @@ void Climber::begin() {
   Serial.println("Climber Initiated");
   pinMode(enA,OUTPUT); 
   pinMode(enB,OUTPUT); 
-} 
+}
 
 char Climber::getCharBT(){
   let = BTSerial.read(); 
 	return let;
 } 
-
-
 
 void Climber::move(int left_speed, int right_speed) { //moves both motors with speed(pwm)
   Serial.println("move activated");
@@ -125,7 +124,7 @@ void Climber::BluetoothUpdateVariables(){
    	let = BTSerial.read();    
 	
 	BTSerial.println("Gyro Angle = " + sensor.read());
-    int	num = BTSerial.read();
+  int	num = BTSerial.read();
 	
 	if(num <= 252)
 	   manualENA_SPD = num;
@@ -162,6 +161,8 @@ else {   // robot to far right
   move(left_speed, right_speed);
    }  
 }
+
+
 
 
 
