@@ -1,8 +1,9 @@
 
+
 /* /////               Climber Software       ///////////////////////
     An Climber Robot 
 
-    v0.1.1b
+    v0.1.2b
 
 By: Ido Azran And Assf Saces
 2022
@@ -13,16 +14,11 @@ By: Ido Azran And Assf Saces
 
 Climber climber; //create Climber object 
 
- int YAW_MIN_ERROR = -3;
- int YAW_MAX_ERROR = 3;  
- 
  bool isManual = false; 
  bool isAuto = false; 
  bool isUpdate = false;
 
-SoftwareSerial BTSerial(2, 3); // RX | TX  
-
-char let;
+ char BTlet;
 
 void setup() {
   climber.begin(); 
@@ -30,10 +26,10 @@ void setup() {
 }
 
 void loop() {   
-let = BTSerial.read(); 
+BTlet = climber.getCharBT(); 
 
-if(let == 'A' || let == 'M' || let == 'V'){
-switch(let) {
+if(BTlet == 'A' || BTlet == 'M' || BTlet == 'V'){
+switch(BTlet) {
  case 'A': //Auto Mode 
 	isAuto = true;
    break;
@@ -45,7 +41,7 @@ switch(let) {
    break; }
 } 
 	
-if(let = 'Z'){ //Exited from Mode
+if(BTlet = 'Z'){ //Exited from Mode
  isAuto = false; 
  isManual = false; 
  isUpdate = false;	
