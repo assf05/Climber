@@ -1,5 +1,5 @@
 /* h code for Climber library
-v0.1
+v0.1.2b
 by Ido Azran & Assf Saces
 2022
 */
@@ -21,7 +21,7 @@ by Ido Azran & Assf Saces
     void BluetoothUpdateVariables(); //function for the "Update Variables" option 
     void AutoMode(); //function for the "Auto Mode" option
     void BluetoothController(); // function for the "Manual Control" option
-    
+    char getCharBT();//return value from BTSerial
  };
 
 #endif 
