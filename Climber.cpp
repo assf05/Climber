@@ -1,6 +1,6 @@
 #include "HardwareSerial.h"
 /* cpp code for Climber library
-v0.1.1b
+v0.1.2b
 using Default I2C pins : SCL = A5, SDA = A4 
 by Ido Azran & Assf Saces
 2022
@@ -45,8 +45,7 @@ void Climber::begin() {
   Wire.begin();
   delay(100);
 
-  while (sensor.wakeup() == false)
-  {
+  while (sensor.wakeup() == false){
     Serial.print(millis());
     Serial.println("\tCould not connect to GY521");
     delay(1000);
@@ -55,7 +54,13 @@ void Climber::begin() {
   Serial.println("Climber Initiated");
   pinMode(enA,OUTPUT); 
   pinMode(enB,OUTPUT); 
-}
+} 
+
+char Climber::getCharBT(){
+  let = BTSerial.read(); 
+	return let;
+} 
+
 
 
 void Climber::move(int left_speed, int right_speed) { //moves both motors with speed(pwm)
@@ -120,7 +125,7 @@ void Climber::BluetoothUpdateVariables(){
    	let = BTSerial.read();    
 	
 	BTSerial.println("Gyro Angle = " + sensor.read());
-  int	num = BTSerial.read();
+    int	num = BTSerial.read();
 	
 	if(num <= 252)
 	   manualENA_SPD = num;
