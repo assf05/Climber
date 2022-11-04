@@ -1,5 +1,5 @@
 /* h code for Climber library
-v0.1.2b
+v0.1
 by Ido Azran & Assf Saces
 2022
 */
@@ -18,10 +18,10 @@ by Ido Azran & Assf Saces
     float GetYaw(); //gets gyro yaw angle 
     void GyroYawCalibration(); //Calibrats gyro for correct yaw reading
     void move(int left_speed, int right_speed); //move with right and left speed 
-    void BluetoothUpdateVariables(); //function for the "Update Variables" option 
+    void BluetoothUpdateVariables(String let); //function for the "Update Variables" option 
     void AutoMode(); //function for the "Auto Mode" option
-    void BluetoothController(); // function for the "Manual Control" option
-    char getCharBT();//return value from BTSerial
+    void BluetoothController(String let); // function for the "Manual Control" option
+   
  };
 
 #endif 
