@@ -2,14 +2,14 @@
 /* /////               Climber Software       ///////////////////////
     An Climber Robot 
 
-    v0.0.2b
+    v0.1.1b
 
 By: Ido Azran And Assf Saces
 2022
 */
 
 #include "Climber.h" 
-#include "HardwareSerial.h"
+#include "SoftwareSerial.h"
 
 Climber climber; //create Climber object 
 
@@ -20,7 +20,9 @@ Climber climber; //create Climber object
  bool isAuto = false; 
  bool isUpdate = false;
 
-SoftwareSerial BTSerial(2, 3); // RX | TX 
+SoftwareSerial BTSerial(2, 3); // RX | TX  
+
+char let;
 
 void setup() {
   climber.begin(); 
@@ -30,17 +32,17 @@ void setup() {
 void loop() {   
 let = BTSerial.read(); 
 
-if(let = 'A' || let = 'M' || let = 'V'){
-switch(let) 
- case A: //Auto Mode 
+if(let == 'A' || let == 'M' || let == 'V'){
+switch(let) {
+ case 'A': //Auto Mode 
 	isAuto = true;
    break;
- case M: //Manual Mode 
+ case 'M': //Manual Mode 
 	isManual = true;
    break;
- case V: //UpdateVariables Mode 
+ case 'V': //UpdateVariables Mode 
 	isUpdate = true;
-   break; 
+   break; }
 } 
 	
 if(let = 'Z'){ //Exited from Mode
@@ -50,12 +52,12 @@ if(let = 'Z'){ //Exited from Mode
 } 
 
 if(isAuto)
- Climber.AutoMode();
+ climber.AutoMode();
 	
 if(isManual)
- Climber.BluetoothController(); 
+ climber.BluetoothController(); 
 	
-if(isUpdate){
-  Climber.BluetoothUpdateVariables();
+if(isUpdate)
+  climber.BluetoothUpdateVariables();
  	
 }
