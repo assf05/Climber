@@ -34,10 +34,10 @@ if(let == "A" || let == "M" || let == "V"){
 if(let == "A")
 isAuto = true;	
 	
-if(let == "M")
+else if(let == "M")
 isManual = true;	 
 	
-if(let == "V")
+else if(let == "V")
 isUpdate = true;	
 } 
 	
