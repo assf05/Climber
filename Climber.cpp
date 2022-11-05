@@ -106,7 +106,7 @@ void Climber::BluetoothController(String let) {
 	             digitalWrite(en3, HIGH);
 	             digitalWrite(en4, LOW);
 	}
-	if(let == "D"){ //Down
+	else if(let == "D"){ //Down
 
 				 
 	 			 digitalWrite(en1, LOW);
@@ -115,7 +115,7 @@ void Climber::BluetoothController(String let) {
 	             digitalWrite(en3, LOW);
 	             digitalWrite(en4, HIGH); 		
 	}
-	if(let == "R"){ //Right
+	else if(let == "R"){ //Right
 
 				 
 			     digitalWrite(en1, HIGH);
@@ -124,7 +124,7 @@ void Climber::BluetoothController(String let) {
 	             digitalWrite(en3, HIGH);
 	             digitalWrite(en4, LOW);	
 	}
-	if(let == "L"){ //Left
+	else if(let == "L"){ //Left
 
 				 
 			     digitalWrite(en1, HIGH);
