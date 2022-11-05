@@ -5,7 +5,7 @@
 
     v0.1.2b
 
-By: Ido Azran And Assf Saces
+By: Ido Azran And Assaf Sachs
 2022
 */
 
