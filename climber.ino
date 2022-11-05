@@ -18,7 +18,7 @@ Climber climber; //create Climber object
  bool isAuto = false; 
  bool isUpdate = false;
 
- char BTlet;
+ String BTlet;
 
 void setup() {
   climber.begin(); 
@@ -26,22 +26,22 @@ void setup() {
 }
 
 void loop() {   
-BTlet = climber.getCharBT(); 
+if(Serial.available() > 0){	
+let = Serial.readString();
 
-if(BTlet == 'A' || BTlet == 'M' || BTlet == 'V'){
-switch(BTlet) {
- case 'A': //Auto Mode 
-	isAuto = true;
-   break;
- case 'M': //Manual Mode 
-	isManual = true;
-   break;
- case 'V': //UpdateVariables Mode 
-	isUpdate = true;
-   break; }
+if(let == "A" || let == "M" || let == "V"){
+	
+if(let == "A")
+isAuto = true;	
+	
+if(let == "M")
+isManual = true;	 
+	
+if(let == "V")
+isUpdate = true;	
 } 
 	
-if(BTlet = 'Z'){ //Exited from Mode
+if(let = "Z"){ //Exited from Mode
  isAuto = false; 
  isManual = false; 
  isUpdate = false;	
@@ -51,9 +51,10 @@ if(isAuto)
  climber.AutoMode();
 	
 if(isManual)
- climber.BluetoothController(); 
+ climber.BluetoothController(let); 
 	
 if(isUpdate)
-  climber.BluetoothUpdateVariables();
+  climber.BluetoothUpdateVariables(let);
  	
+} 
 }
