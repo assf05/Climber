@@ -14,11 +14,13 @@ By: Ido Azran And Assf Saces
 
 Climber climber; //create Climber object 
 
+//The boolean veriables that will send the robot to different modes based on when they are true
+
  bool isManual = false; 
  bool isAuto = false; 
  bool isUpdate = false;
 
- String let;
+ String let; //The letter that send the robot to different modes gets the letter from the app
 
 void setup() {
   climber.begin(); 
@@ -31,13 +33,13 @@ let = Serial.readString();
 
 if(let == "A" || let == "M" || let == "V"){
 	
-if(let == "A")
+if(let == "A") //sends the robot to auto mode
 isAuto = true;	
 	
-else if(let == "M")
+else if(let == "M") //sends the robot to manual mode
 isManual = true;	 
 	
-else if(let == "V")
+else if(let == "V") //sends the robot to update mode
 isUpdate = true;	
 } 
 	
@@ -47,13 +49,13 @@ if(let = "Z"){ //Exited from Mode
  isUpdate = false;	
 } 
 
-if(isAuto)
+if(isAuto) //auto mode
  climber.AutoMode();
 	
-if(isManual)
+if(isManual) //manual mode
  climber.BluetoothController(let); 
 	
-if(isUpdate)
+if(isUpdate) //update mode
   climber.BluetoothUpdateVariables(let);
  	
 } 
