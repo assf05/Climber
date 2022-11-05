@@ -2,7 +2,7 @@
 /* cpp code for Climber library
 v0.1
 using Default I2C pins : SCL = A5, SDA = A4 
-by Ido Azran & Assf Saces
+by Ido Azran & Assaf Sachs
 2022
 */
  #include "Arduino.h"
