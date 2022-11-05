@@ -18,7 +18,7 @@ Climber climber; //create Climber object
  bool isAuto = false; 
  bool isUpdate = false;
 
- String BTlet;
+ String let;
 
 void setup() {
   climber.begin(); 
