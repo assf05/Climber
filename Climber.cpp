@@ -4,21 +4,39 @@ v0.1
 using Default I2C pins : SCL = A5, SDA = A4 
 by Ido Azran & Assaf Sachs
 2022
+motors that are on OUT1 on one of the motor(all ) drivers are on the right side of the robots, 
 */
  #include "Arduino.h"
  #include "Climber.h"
  #include <Wire.h>
  #include <GY521.h> 
  #include <SoftwareSerial.h>
+ #include "HCPCA9685.h"
+
  
+//Motor Driver 1
+static const int MD1en1 = 22; 
+static const int MD1en2 = 23; 
+static const int MD1en3 = 24; 
+static const int MD1en4 = 25; 
 
-static const int en1 = 3; 
-static const int en2 = 4; 
-static const int enA = 2; // connected to l298n, left motor
+//Motor Driver 2
+static const int MD2en1 = 26; 
+static const int MD2en2 = 27; 
+static const int MD2en3 = 28; 
+static const int MD2en4 = 29; 
 
-static const int en3 = 5; 
-static const int en4 = 6; 
-static const int enB = 7; // connected to l298n, right motor 
+//Motor Driver 3
+static const int MD3en1 = 30; 
+static const int MD3en2 = 31; 
+static const int MD3en3 = 32; 
+static const int MD3en4 = 33; 
+
+int[]MD1enPins = {MD1en1, MD1en2, MD1en3, MD1en4};
+int[]MD2enPins = {MD2en1, MD2en2, MD2en3, MD2en4};
+int[]MD3enPins = {MD3en1, MD3en2, MD3en3, MD3en4};
+int[]MD4enPins = {MD4en1, MD4en2, MD4en3, MD4en4};
+
 
 int left_speed; 
 int right_speed;
@@ -30,7 +48,10 @@ float manualENA_SPD = 0;
 float manualENB_SPD = 0;  
 
  int YAW_MIN_ERROR = -3;
- int YAW_MAX_ERROR = 3;
+ int YAW_MAX_ERROR = 3; 
+
+HCPCA9685 pwmDriver(0x40);
+
 
 
 Climber::Climber() {
@@ -38,13 +59,24 @@ Climber::Climber() {
 }
 
 void Climber::begin() {
-  pinMode(en1, OUTPUT);
-  pinMode(en2, OUTPUT);
-  pinMode(enA, OUTPUT);
-  
-  pinMode(en3, OUTPUT);
-  pinMode(en4, OUTPUT);
-  pinMode(enB, OUTPUT);
+	//Motor Driver 1
+  pinMode(MD1en1, OUTPUT);
+  pinMode(MD1en2, OUTPUT);
+  pinMode(MD1en3, OUTPUT);
+  pinMode(MD1en4, OUTPUT);
+	//Motor Driver 2	 
+  pinMode(MD2en1, OUTPUT);
+  pinMode(MD2en2, OUTPUT);
+  pinMode(MD2en3, OUTPUT);
+  pinMode(MD2en4, OUTPUT);
+	//Motor Driver 3
+  pinMode(MD3en1, OUTPUT);
+  pinMode(ND3en2, OUTPUT);
+  pinMode(MD3en3, OUTPUT);
+  pinMode(MD3en4, OUTPUT);
+	
+  pwmDriver.Init();
+  pwmDriver.Sleep(false);
   
   Serial.begin(9600);
   Wire.begin();
@@ -54,31 +86,50 @@ void Climber::begin() {
 
 
 
-void Climber::move(int left_speed, int right_speed) { //moves both motors with speed(pwm) 
+void Climber::moveStraight(HCPCA9685 pwmDriver) { //moves both motors with speed(pwm) 
+	
+	for(int i = 0; i < 6; i++)
+	pwmDriver(i,0,4095);	
+	
+		for(int j = 0; j < 6; j++){
+			
+			if(i % 2 != 0){	
+			digitalWrite(MD1enPins[j], HIGH);
+			digitalWrite(MD2enPins[j], HIGH);
+			digitalWrite(MD3enPins[j], HIGH);
+			digitalWrite(MD4enPins[j], HIGH);
+			}
+			else{
+			digitalWrite(MD1enPins[j], LOW);
+			digitalWrite(MD2enPins[j], LOW);
+			digitalWrite(MD3enPins[j], LOW);
+			digitalWrite(MD4enPins[j], LOW);
+			}
+				
+  	}
+ }
 
-  analogWrite(enA, left_speed); //moves left moter with left_speed(pwm)
-  analogWrite(enB, right_speed);//moves left moter with right_speed(pwm)
-
-  if(left_speed > 0){
-	  digitalWrite(en1, HIGH);
-	  digitalWrite(en2, LOW);
-  } 
-  else{
-	  digitalWrite(en1, LOW);
-	  digitalWrite(en1, HIGH);
-  }
-  
-    if(right_speed > 0){
-	  digitalWrite(en3, HIGH);
-	  digitalWrite(en4, LOW);
-  } 
-  else{
-	  digitalWrite(en3, LOW);
-	  digitalWrite(en4, HIGH);
-  }
-	  
-  
-
+void Climber::moveBack(HCPCA9685 pwmDriver) { //moves both motors with speed(pwm) 
+	
+	for(int i = 0; i < 6; i++)
+	pwmDriver(i,0,4095);	
+	
+		for(int j = 0; j < 6; j++){
+			
+			if(i % 2 != 0){	
+			digitalWrite(MD1enPins[j], LOW);
+			digitalWrite(MD2enPins[j], LOW);
+			digitalWrite(MD3enPins[j], LOW);
+			digitalWrite(MD4enPins[j], LOW);
+			}
+			else{
+			digitalWrite(MD1enPins[j], HIGH);
+			digitalWrite(MD2enPins[j], HIGH);
+			digitalWrite(MD3enPins[j], HIGH);
+			digitalWrite(MD4enPins[j], HIGH);
+			}
+				
+  	}
  }
 
  float Climber::GetYaw() {
@@ -100,7 +151,7 @@ void Climber::BluetoothController(String let) {
 	if(let == "U"){ //Up
 
 				 
-			     digitalWrite(en1, HIGH);
+		     digitalWrite(en1, HIGH);
 	             digitalWrite(en2, LOW);
 				 
 	             digitalWrite(en3, HIGH);
@@ -109,7 +160,7 @@ void Climber::BluetoothController(String let) {
 	else if(let == "D"){ //Down
 
 				 
-	 			 digitalWrite(en1, LOW);
+	 	     digitalWrite(en1, LOW);
 	             digitalWrite(en2, HIGH);
 				 
 	             digitalWrite(en3, LOW);
