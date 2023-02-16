@@ -6,3 +6,4 @@ Using following liberies:
  #include <Wire.h>
  #include <GY521.h> 
  #include <SoftwareSerial.h>
+ #include "HCPCA9685.h"
