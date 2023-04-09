@@ -21,6 +21,8 @@ by Ido Azran & Assf Saces
     void BluetoothUpdateVariables(String let); //function for the "Update Variables" option 
     void AutoMode(); //function for the "Auto Mode" option
     void BluetoothController(String let); // function for the "Manual Control" option
+    void SetMotorPWM(int port, int value);//sets motor pwm 
+    void PrintPinValue(int pin); //prints pwm of pin
    
  };
 
