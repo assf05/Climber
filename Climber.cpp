@@ -11,8 +11,7 @@ motors that are connected to OUT1 & OUT2 are on the right side of the robot. mot
  #include <Wire.h>
  #include <GY521.h> 
  #include <SoftwareSerial.h>
- #include "HCPCA9685.h"
-
+ #include <Adafruit_PWMServoDriver.h>
  
 //Motor Driver 1
 static const int MD1en1 = 22; 
@@ -50,7 +49,7 @@ float manualENB_SPD = 0;
  int YAW_MIN_ERROR = -3;
  int YAW_MAX_ERROR = 3; 
 
-HCPCA9685 pwmDriver(0x40);
+Adafruit_PWMServoDriver pca9685 = Adafruit_PWMServoDriver(0x40);//object to represent PCA9685 at default I2C address  (0x40, more extensions up to 0x60)
     
 int i;
 
@@ -77,21 +76,34 @@ void Climber::begin() {
   pinMode(MD3en3, OUTPUT);
   pinMode(MD3en4, OUTPUT);
 	
-  pwmDriver.Init();
-  pwmDriver.Sleep(false);
+
   
   Serial.begin(9600);
+  pca9685.begin();  
+  pca9685.setPWMFreq(500);   // Set PWM Frequency(24-1526Hz). arduino PWM works at 500Hz
   Wire.begin();
   delay(100);
 
 }
 
+       void Climber::SetMotorPWM (int port, int value) { //writes a value to the i2c port
+   	value = map(value, 0, 255, 0, 4095);
+    	pca9685.setPWM(port, 0, value);    // Write to PCA9685. 
+    }
+
+    void Climber::PrintPinValue (int pin) {
+      int val = pca9685.getPWM(pin);
+        Serial.print("pin Value =");
+        Serial.println(val);
+        return(val);
+      }
 
 
-void Climber::moveUp(HCPCA9685 pwmDriver) { //moves robot foward with speed(pwm) 
+
+void Climber::moveUp() { //moves robot foward with speed(pwm) 
 	
 	for(int i = 0; i < 6; i++)
-	pwmDriver(i,0,4095);	
+		SetMotorPWM(i,255);	
 	
 		for(i = 0; j < 3; j++){
 			digitalWrite(in1Pins[j], HIGH);
@@ -99,12 +111,14 @@ void Climber::moveUp(HCPCA9685 pwmDriver) { //moves robot foward with speed(pwm)
 			digitalWrite(in3Pins[j], HIGH);
 			digitalWrite(in4Pins[j], LOW);
   	}
- }
+ } 
+    
 
-void Climber::moveDown(HCPCA9685 pwmDriver) { //moves robot backwards with speed(pwm) 
+
+void Climber::moveDown() { //moves robot backwards with speed(pwm) 
 	
 	for( i = 0; i < 6; i++)
-	pwmDriver(i,0,4095);	
+		etMotorPWM(i,255);	
 	
 		for(i= 0; i < 3; i++){
 			digitalWrite(in1Pins[j], LOW);
@@ -114,10 +128,10 @@ void Climber::moveDown(HCPCA9685 pwmDriver) { //moves robot backwards with speed
   	}
  }
  
-  void Climber::moveRight(HCPCA9685 pwmDriver) { //moves robot right with speed(pwm) 
+  void Climber::moveRight() { //moves robot right with speed(pwm) 
 	
 	for( i = 0; i < 6; i++)
-	pwmDriver(i,0,4095);	
+		SetMotorPWM(i,255);	
 	
 		for(i= 0; i < 3; i++){
 			digitalWrite(in1Pins[j], LOW);
@@ -127,10 +141,10 @@ void Climber::moveDown(HCPCA9685 pwmDriver) { //moves robot backwards with speed
   	}
  }
 
-void Climber::moveLeft(HCPCA9685 pwmDriver) { //moves robot left with speed(pwm) 
+void Climber::moveLeft() { //moves robot left with speed(pwm) 
 	
 	for( i = 0; i < 6; i++)
-	pwmDriver(i,0,4095);	
+		SetMotorPWM(i,255);	
 	
 		for(i= 0; i < 3; i++){
 			digitalWrite(in1Pins[j], HIGH);
@@ -158,66 +172,14 @@ void Climber::GyroYawCalibration() {
 void Climber::BluetoothController(String let) { 
 
 	if(let == "U") //Up		 
-		moveUp(pwmDriver);
+		moveUp();
 	else if(let == "D") //Down
-		moveDown(pwmDriver);
+		moveDown();
 	else if(let == "R") //Right
-		moveRight(pwmDriver);
+		moveRight();
 	else if(let == "L") //Left
-		moveLeft(pwmDriver);
+		moveLeft();
  
-	/* switch (let) { 
-	  case "U": // Stright
-	             analogWrite(enA, 255); 
-                 analogWrite(enB, 255); 
-				 
-			     digitalWrite(en1, HIGH);
-	             digitalWrite(en2, LOW);
-				 
-	             digitalWrite(en3, HIGH);
-	             digitalWrite(en4, LOW);
-				 
-		         
-	   break;
-			
-	 case "D": // Backwards
-	             analogWrite(enA, -255); 
-                 analogWrite(enB, -255);
-				 
-	 			 digitalWrite(en1, LOW);
-	             digitalWrite(en2, HIGH);
-				 
-	             digitalWrite(en3, LOW);
-	             digitalWrite(en4, HIGH); 
-				 
-
-	  break;
-			
-	 case "R": // Right
-			     analogWrite(enA, 180); 
-                 analogWrite(enB, 120);
-				 
-			     digitalWrite(en1, HIGH);
-	             digitalWrite(en2, LOW);
-				 
-	             digitalWrite(en3, HIGH);
-	             digitalWrite(en4, LOW);	 
-
-	  break;
-
-	 case "L": //Left
-	 		     analogWrite(enA, 120); 
-                 analogWrite(enB, 180);
-				 
-			     digitalWrite(en1, HIGH);
-	             digitalWrite(en2, LOW);
-				 
-	             digitalWrite(en3, HIGH);
-	             digitalWrite(en4, LOW);	 
-
-	  break;
-}
-*/
 }
 void Climber::BluetoothUpdateVariables(String let){
 /*
@@ -264,16 +226,17 @@ void Climber::AutoMode(){
   yaw = sensor.getYaw();
 	
  if(yaw > YAW_MIN_ERROR && yaw < YAW_MAX_ERROR){ // robot in exceptable range, robot driving stright
-  moveUp(pwmDriver);
+  moveUp();
 } 
 
 else if (yaw < YAW_MIN_ERROR) {  // robot to far left
-  moveRight(pwmDriver);
+  moveRight();
 } 
 
 else {   // robot to far right
-  moveRight(pwmDriver);
-   }  
+  moveRight();
+   }   
+	
 }
 
 
