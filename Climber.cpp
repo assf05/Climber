@@ -12,30 +12,35 @@ motors that are connected to OUT1 & OUT2 are on the right side of the robot. mot
  #include <GY521.h> 
  #include <SoftwareSerial.h>
  #include <Adafruit_PWMServoDriver.h>
+ #include <L298NX2.h>
  
-//Motor Driver 1
-static const int MD1en1 = 22; 
-static const int MD1en2 = 23; 
-static const int MD1en3 = 24; 
-static const int MD1en4 = 25; 
+//Motor Driver 1, Front Motors
+static const int MD1en1 = 8; 
+static const int MD1en2 = 9; 
+static const int MD1en3 = 10; 
+static const int MD1en4 = 11;  
+static const int MD1enA = 2;  
+static const int MD1enB = 3;  
 
-//Motor Driver 2
-static const int MD2en1 = 26; 
-static const int MD2en2 = 27; 
-static const int MD2en3 = 28; 
-static const int MD2en4 = 29; 
+//Motor Driver 2, Middle Motors
+static const int MD2en1 = 22; 
+static const int MD2en2 = 23; 
+static const int MD2en3 = 24; 
+static const int MD2en4 = 25; 
+static const int MD2enA = 4;  
+static const int MD2enB = 5; 
 
-//Motor Driver 3
-static const int MD3en1 = 30; 
-static const int MD3en2 = 31; 
-static const int MD3en3 = 32; 
-static const int MD3en4 = 33; 
+//Motor Driver 3, Back Motors
+static const int MD3en1 = 26; 
+static const int MD3en2 = 27; 
+static const int MD3en3 = 28; 
+static const int MD3en4 = 29; 
+static const int MD3enA = 6;  
+static const int MD3enB = 7; 
 
-int[in1Pins = {MD1en1, MD2en1, MD3en1};
-int[]in2Pins = {MD1en2, MD2en2, MD3en2};
-int[]in3Pins = {MD1en3, MD2en3, MD3en3};
-int[]in4Pins = {MD1en4, MD2en4, MD3en4};
-
+L298NX2 MD1(MD1enA, MD1en1, MD1en2, MD1en3, MD1en4, MD1enB);
+L298NX2 MD2(MD2enA, MD2en1, MD2en2, MD2en3, MD2en4, MD2enB);
+L298NX2 MD3(MD3enA, MD3en1, MD3en2, MD3en3, MD3en4, MD3enB);
 
 int left_speed; 
 int right_speed;
@@ -60,71 +65,32 @@ Climber::Climber() {
 }
 
 void Climber::begin() {
-	//Motor Driver 1
-  pinMode(MD1en1, OUTPUT);
-  pinMode(MD1en2, OUTPUT);
-  pinMode(MD1en3, OUTPUT);
-  pinMode(MD1en4, OUTPUT);
-	//Motor Driver 2	 
-  pinMode(MD2en1, OUTPUT);
-  pinMode(MD2en2, OUTPUT);
-  pinMode(MD2en3, OUTPUT);
-  pinMode(MD2en4, OUTPUT);
-	//Motor Driver 3
-  pinMode(MD3en1, OUTPUT);
-  pinMode(ND3en2, OUTPUT);
-  pinMode(MD3en3, OUTPUT);
-  pinMode(MD3en4, OUTPUT);
+
 	
 
   
   Serial.begin(9600);
-  pca9685.begin();  
-  pca9685.setPWMFreq(500);   // Set PWM Frequency(24-1526Hz). arduino PWM works at 500Hz
+  MD1.setSpeed(80); 
+  MD2.setSpeed(80); 
+  MD3.setSpeed(80); 
   Wire.begin();
   delay(100);
-
 }
-
-       void Climber::SetMotorPWM (int port, int value) { //writes a value to the i2c port
-   	value = map(value, 0, 255, 0, 4095);
-    	pca9685.setPWM(port, 0, value);    // Write to PCA9685. 
-    }
-
-    void Climber::PrintPinValue (int pin) {
-      int val = pca9685.getPWM(pin);
-        Serial.print("pin Value =");
-        Serial.println(val);
-        return(val);
-      }
 
 
 
 void Climber::moveUp() { //moves robot foward with speed(pwm) 
-	
-	for(int i = 0; i < 6; i++)
-		SetMotorPWM(i,255);	
-	
-		for(i = 0; j < 3; j++){
-			digitalWrite(in1Pins[j], HIGH);
-			digitalWrite(in2Pins[j], LOW);
-			digitalWrite(in3Pins[j], HIGH);
-			digitalWrite(in4Pins[j], LOW);
-  	}
+	MD1.forward();
+	MD2.forward(); 
+	MD3.forward();
  } 
     
 
 
 void Climber::moveDown() { //moves robot backwards with speed(pwm) 
-	
-	for( i = 0; i < 6; i++)
-		etMotorPWM(i,255);	
-	
-		for(i= 0; i < 3; i++){
-			digitalWrite(in1Pins[j], LOW);
-			digitalWrite(in2Pins[j], HIGH);
-			digitalWrite(in3Pins[j], LOW);
-			digitalWrite(in4Pins[j], HIGH);
+	MD1.backward();
+	MD2.backward(); 
+	MD3.backward();
   	}
  }
  
